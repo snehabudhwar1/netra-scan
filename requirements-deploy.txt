@@ -1,0 +1,8 @@
+# Used by the Dockerfile (the website only). torch/torchvision are installed first from the CPU index.
+# numpy, scipy, scikit-learn and joblib are pinned by models/pins.txt so they match training.
+fastapi
+uvicorn
+python-multipart
+pillow
+opencv-python-headless
+scikit-image

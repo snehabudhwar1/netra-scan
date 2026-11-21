@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Netra Scan: retina screening for diabetic retinopathy</title>
+  <meta name="description" content="Upload a retina photo. Netra Scan checks the photo quality, estimates the stage of diabetic retinopathy from 0 to 4, and says whether to see an eye doctor. Student research prototype, not a medical diagnosis.">
+  <meta name="theme-color" content="#160C11">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23160C11'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23F3EEF0' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23EE8A3A'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="fonts.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to the upload</a>
+
+  <!-- ============================================================ the instrument -->
+  <header class="stage" id="top">
+    <nav class="nav wrap" aria-label="Main">
+      <a class="brand" href="#top">
+        <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+          <circle cx="16" cy="16" r="14.5" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle cx="16" cy="16" r="8" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".55"/>
+          <circle cx="16" cy="16" r="3.4" fill="#EE8A3A"/>
+        </svg>
+        <span>Netra Scan</span>
+      </a>
+      <div class="nav-links">
+        <a href="#how">How it works</a>
+        <a href="#numbers">How well it works</a>
+        <a href="#limits">Limits and privacy</a>
+      </div>
+    </nav>
+
+    <p class="proto wrap" role="note">
+      <strong>Research prototype.</strong> Netra Scan is a screening aid, not a diagnosis, and it has not been tested on patients.
+    </p>
+
+    <div class="stage-grid wrap" id="main">
+      <div class="copy">
+        <h1>Screen a retina photo for diabetic retinopathy</h1>
+        <p class="lede">
+          Upload a retina photo. Netra Scan checks that the photo is good enough, estimates the stage
+          of the disease from 0 to 4, and tells you whether to see an eye doctor. When it is not sure, it says so.
+        </p>
+
+        <div class="actions">
+          <button id="pick" class="btn solid" type="button">Choose a photo</button>
+          <button id="go" class="btn line" type="button" disabled>Analyse photo</button>
+          <button id="reset" class="btn text" type="button" hidden>Remove photo</button>
+        </div>
+        <p class="hint">JPG, PNG or TIFF, up to 15 MB. You can also drop a file onto the lens. Your photo is analysed in memory and never saved.</p>
+
+        <p class="hint"><a class="plink" id="plink" href="#patient">Add patient details for the report</a> (optional)</p>
+
+        <details class="good">
+          <summary>What makes a good photo?</summary>
+          <ul>
+            <li>A colour photo of the back of the eye, with a round retina on a dark background.</li>
+            <li>In focus, evenly lit, not too dark and not washed out.</li>
+            <li>The whole round retina visible and centred.</li>
+          </ul>
+        </details>
+      </div>
+
+      <div class="scope">
+        <div class="lens-frame" id="frame">
+          <svg class="dial" id="dial" viewBox="0 0 400 400" aria-hidden="true"></svg>
+
+          <div class="lens" id="lens" role="button" tabindex="0"
+               aria-label="Retina photo lens. Press Enter to choose a photo, or drop one here.">
+            <svg class="sample" id="sample" viewBox="0 0 400 400" aria-hidden="true">
+              <defs>
+                <radialGradient id="g-bg" cx="42%" cy="50%" r="62%">
+                  <stop offset="0" stop-color="#F4A04C"/>
+                  <stop offset=".42" stop-color="#E0702E"/>
+                  <stop offset=".78" stop-color="#A8401B"/>
+                  <stop offset="1" stop-color="#5A1B0E"/>
+                </radialGradient>
+                <radialGradient id="g-disc" cx="50%" cy="50%" r="50%">
+                  <stop offset="0" stop-color="#FFF6D2"/>
+                  <stop offset=".55" stop-color="#F9D27C"/>
+                  <stop offset="1" stop-color="#F2A04A" stop-opacity="0"/>
+                </radialGradient>
+                <radialGradient id="g-mac" cx="50%" cy="50%" r="50%">
+                  <stop offset="0" stop-color="#6E1F0E" stop-opacity=".6"/>
+                  <stop offset="1" stop-color="#6E1F0E" stop-opacity="0"/>
+                </radialGradient>
+                <radialGradient id="g-vig" cx="50%" cy="50%" r="50%">
+                  <stop offset=".7" stop-color="#000" stop-opacity="0"/>
+                  <stop offset="1" stop-color="#000" stop-opacity=".55"/>
+                </radialGradient>
+                <filter id="mott" x="0" y="0" width="100%" height="100%">
+                  <feTurbulence type="fractalNoise" baseFrequency=".022 .03" numOctaves="3" seed="7"/>
+                  <feColorMatrix values="0 0 0 0 .45  0 0 0 0 .12  0 0 0 0 .03  0 0 0 .55 -.08"/>
+                </filter>
+              </defs>
+              <rect width="400" height="400" fill="#000"/>
+              <circle cx="200" cy="200" r="196" fill="url(#g-bg)"/>
+              <circle cx="200" cy="200" r="196" filter="url(#mott)" opacity=".7"/>
+              <ellipse cx="268" cy="206" rx="34" ry="30" fill="url(#g-mac)"/>
+              <g id="vessels" fill="none" stroke-linecap="round" stroke="#5C140A"></g>
+              <g id="lesions"></g>
+              <ellipse cx="128" cy="196" rx="34" ry="38" fill="url(#g-disc)"/>
+              <ellipse cx="130" cy="196" rx="12" ry="14" fill="#FFF8DE" opacity=".8"/>
+              <circle cx="200" cy="200" r="196" fill="url(#g-vig)"/>
+            </svg>
+
+            <img class="shot" id="preview" alt="The photo you chose" hidden>
+            <img class="shot" id="viewer" alt="" hidden>
+            <div class="sweep" id="sweep" aria-hidden="true"></div>
+            <p class="lens-msg" id="lens-msg">Drop a retina photo here, or click to choose</p>
+          </div>
+
+          <ul class="callouts" id="callouts" aria-hidden="true">
+            <li class="co disc l" style="left:34.5%;top:49%"><i></i><span>Optic disc</span></li>
+            <li class="co vessel" style="left:57%;top:32.5%"><i></i><span>Blood vessels</span></li>
+            <li class="co macula" style="left:64.5%;top:50.5%"><i></i><span>Macula</span></li>
+            <li class="co spots" style="left:70%;top:61%"><i></i><span>Bright spots</span></li>
+          </ul>
+        </div>
+
+        <div class="views" id="views" role="group" aria-label="Choose the picture shown in the lens" hidden>
+          <button type="button" data-view="retina" aria-pressed="true">Photo</button>
+          <button type="button" data-view="enhanced" aria-pressed="false">Contrast view</button>
+          <button type="button" data-view="vessels" aria-pressed="false">Vessel map</button>
+        </div>
+        <p class="status" id="status" aria-live="polite">Illustration of a retina. Drop your own photo to begin.</p>
+        <input id="file" type="file" accept="image/*,.tif,.tiff" hidden>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================ patient details -->
+  <section class="band light patient" id="patient" aria-labelledby="patient-h">
+    <div class="wrap">
+      <h2 id="patient-h">Patient details</h2>
+      <p class="intro">Optional. Whatever you enter is printed on the report. It stays in this browser tab and is never sent to the server.</p>
+
+      <form id="pt-form" class="pt-grid" autocomplete="off">
+        <label class="f wide">Patient name or ID
+          <input id="pt-name" type="text" maxlength="80" placeholder="For example: Asha Verma, or ID 1042">
+        </label>
+        <label class="f">Age
+          <input id="pt-age" type="number" inputmode="numeric" min="0" max="120" placeholder="Years">
+        </label>
+        <label class="f">Sex
+          <select id="pt-sex">
+            <option value="">Not given</option>
+            <option>Female</option><option>Male</option><option>Other</option><option>Prefer not to say</option>
+          </select>
+        </label>
+        <label class="f">Diabetes type
+          <select id="pt-type">
+            <option value="">Not given</option>
+            <option>Type 1</option><option>Type 2</option><option>Gestational</option><option>Not sure</option>
+          </select>
+        </label>
+        <label class="f">Years with diabetes
+          <input id="pt-years" type="number" inputmode="numeric" min="0" max="80" placeholder="Years">
+        </label>
+        <label class="f">Eye in the photo
+          <select id="pt-eye">
+            <option value="">Not given</option>
+            <option>Right eye</option><option>Left eye</option><option>Not sure</option>
+          </select>
+        </label>
+        <fieldset class="f wide sym">
+          <legend>Symptoms right now</legend>
+          <label><input type="checkbox" name="sym" value="Blurred vision"> Blurred vision</label>
+          <label><input type="checkbox" name="sym" value="Floaters"> Floaters (spots or threads)</label>
+          <label><input type="checkbox" name="sym" value="Dark patches"> Dark patches</label>
+          <label><input type="checkbox" name="sym" value="Sudden loss of vision"> Sudden loss of vision</label>
+        </fieldset>
+        <label class="f full">Notes
+          <textarea id="pt-notes" rows="3" maxlength="300" placeholder="For example: date of the last eye check, or the latest blood sugar test"></textarea>
+        </label>
+      </form>
+
+      <div class="row-btns">
+        <a class="btn ink" id="pt-back" href="#top">Back to the photo</a>
+        <button class="btn outline" id="pt-clear" type="button">Clear details</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ the report -->
+  <section class="desk" id="report" aria-labelledby="report-h" hidden>
+    <div class="wrap">
+      <article class="sheet" id="sheet" tabindex="-1"></article>
+    </div>
+  </section>
+
+  <!-- ============================================================ how it works -->
+  <section class="band light" id="how" aria-labelledby="how-h">
+    <div class="wrap">
+      <h2 id="how-h">How it works</h2>
+      <p class="intro">Three steps happen in a few seconds. The photo only moves on to the next step if the one before it went well.</p>
+      <ol class="steps">
+        <li>
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="2.5"/>
+            <path d="M18 34l9 9 19-22" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3>Check the photo</h3>
+          <p>Blur, darkness, glare, a cut-off retina and "this is not a retina" are measured first. A photo that fails is not graded. You see the reason and how to retake it.</p>
+        </li>
+        <li>
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="2.5"/>
+            <path d="M12 36c10-14 18 10 26-4s10-8 14-6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="40" cy="22" r="3" fill="currentColor"/><circle cx="24" cy="46" r="2.4" fill="currentColor"/><circle cx="46" cy="42" r="2" fill="currentColor"/>
+          </svg>
+          <h3>Read the photo</h3>
+          <p>About 45 measurements of blood vessels, bright spots, dark spots and colour are combined with a numeric description from a pre-trained image network. A statistical machine-learning model turns those numbers into a grade.</p>
+        </li>
+        <li>
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="2.5"/>
+            <rect x="16" y="29" width="32" height="6" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"/>
+            <rect x="16" y="29" width="20" height="6" rx="3" fill="currentColor"/>
+            <path d="M42 22v20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <h3>Say how sure it is</h3>
+          <p>You get a grade from 0 to 4, the chance that an eye-doctor visit is needed, and a clear "uncertain" label when the photo is unlike the photos the model learned from or the model is not confident.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============================================================ honest numbers -->
+  <section class="band" id="numbers" aria-labelledby="numbers-h">
+    <div class="wrap">
+      <h2 id="numbers-h">How well it works</h2>
+      <div id="numbers-body" class="numbers-body"><p class="intro">Loading the test results.</p></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ limits -->
+  <section class="band night" id="limits" aria-labelledby="limits-h">
+    <div class="wrap limits">
+      <div>
+        <h2 id="limits-h">Limits and privacy</h2>
+        <ul class="plain">
+          <li>It is not a diagnosis. Only an eye doctor can diagnose diabetic retinopathy, and Netra Scan has not been tested on patients.</li>
+          <li>It learned from one public set of photos. On photos from a different clinic it usually does worse. The numbers above show by how much.</li>
+          <li>It is built for colour retina photos. Pictures of a screen, other parts of the eye and scans have not been tested.</li>
+          <li>Mild disease (grade 1) and the most advanced grades (3 and 4) are the hardest to name exactly.</li>
+          <li>The Contrast view and Vessel map are image filters to help a person look. They do not show what the model used to decide.</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Your photo</h2>
+        <p class="plain-p">The photo is processed in the server's memory to produce the result. It is not saved, and the result is not stored.</p>
+        <p class="plain-p">If a result worries you, or you have symptoms such as blurred vision, floaters or dark patches, see an eye doctor. Diabetes also needs regular eye check-ups even when a photo looks fine.</p>
+      </div>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
