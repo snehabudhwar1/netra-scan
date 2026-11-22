@@ -1,7 +1,7 @@
 """Step 1: turn every photo into numbers (features).
 
 Two kinds of numbers are made for each photo:
-  * hand features  - ~45 numbers we designed (vessels, bright/dark spots, colours...)
+  * hand features  - 36 numbers we designed (vessels, bright/dark spots, colours...)
   * embedding      - 2048 numbers from a pre-trained ResNet-50 (it reads the photo for us)
 plus quality numbers (sharpness, brightness, contrast...) for the quality check.
 

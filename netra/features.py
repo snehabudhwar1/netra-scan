@@ -28,7 +28,7 @@ def vessel_map(g):
 
 
 def extract_hand(prep):
-    """Return an ordered dict of ~45 numbers describing one prepared image."""
+    """Return an ordered dict of 36 numbers describing one prepared image."""
     rgb, g, m = _small(prep)
     inner = cv2.erode(m.astype(np.uint8), np.ones((15, 15), np.uint8)).astype(bool)
     if inner.sum() < 50:
