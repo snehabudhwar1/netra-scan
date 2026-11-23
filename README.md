@@ -20,9 +20,9 @@ Student project for the course Statistical Machine Learning, by **Sneha** (Enrol
 5. Shows helper pictures (contrast-enhanced view, blood-vessel map) and a **printable report**.
 6. The photo is analysed in memory and **never saved**.
 
-| Patient details | Grade chances |
+| Patient details | How well it works |
 |---|---|
-| ![Form](docs/images/ui_form.png) | ![Grades](docs/images/ui_grades.png) |
+| ![Form](docs/images/ui_form.png) | ![How well it works](docs/images/ui_grades.png) |
 
 ## How it works
 
